@@ -11,6 +11,7 @@ import (
 var ErrCreateProduct = errors.New("Не удалось создать товар")
 var ErrDelete = errors.New("Не удалось удалить товар")
 var ErrEditStock = errors.New("Не удалось продать товар")
+var ErrEditPrice = errors.New("Не удалось поменять цену у товара")
 
 type Product struct {
 	ID    int
@@ -49,6 +50,9 @@ func CreateProduct(scanner *bufio.Scanner) (Product, error) {
 		return Product{}, ErrCreateProduct
 	}
 	name := strings.TrimSpace(scanner.Text())
+	if len(name) == 0 {
+		return Product{}, ErrCreateProduct
+	}
 	fmt.Print("ВВедите цену: \n>> ")
 	if !scanner.Scan() {
 		return Product{}, ErrCreateProduct
@@ -94,4 +98,17 @@ func (w *Warehouse) SellProduct(id int, amount int) error {
 	}
 
 	return ErrEditStock
+}
+
+func (w *Warehouse) EditProductPrice(id int, amount int) error {
+	if amount <= 0 {
+		return ErrEditPrice
+	}
+	for i, p := range w.products {
+		if id == p.ID {
+			w.products[i].Price = amount
+			return nil
+		}
+	}
+	return ErrEditPrice
 }

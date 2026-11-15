@@ -25,6 +25,7 @@ func main() {
 		fmt.Println("2 — добавить товар")
 		fmt.Println("3 — удалить товар по ID")
 		fmt.Println("4 — продать товар (уменьшить остаток)")
+		fmt.Println("5 — поменять цену у товара")
 		fmt.Println("0 — выход")
 		fmt.Print(">> ")
 		if !scanner.Scan() {
@@ -99,8 +100,34 @@ func main() {
 			err = store.SellProduct(id, amount)
 			if err != nil {
 				fmt.Println(err)
+				continue
 			}
 			fmt.Println("Товар продан успешно")
+		case 5:
+			fmt.Print("Введите айди у которого хотите поменять цену \n>> ")
+			if !scanner.Scan() {
+				return
+			}
+			id, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
+			if err != nil {
+				fmt.Println("Введите ЧИСЛО")
+				continue
+			}
+			fmt.Print("Введите новую цену \n>> ")
+			if !scanner.Scan() {
+				return
+			}
+			amount, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
+			if err != nil {
+				fmt.Println("Введите ЧИСЛО")
+				continue
+			}
+			err = store.EditProductPrice(id, amount)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			fmt.Println("Цена изменена успешно!")
 		case 0:
 			return
 		default:

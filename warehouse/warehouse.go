@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+var ErrIdNotFound = errors.New("Товара с таким id нет")
 var ErrCreateProduct = errors.New("Не удалось создать товар")
 var ErrDelete = errors.New("Не удалось удалить товар")
 var ErrEditStock = errors.New("Не удалось продать товар")
@@ -68,7 +69,7 @@ func CreateProduct(scanner *bufio.Scanner) (Product, error) {
 		return Product{}, ErrCreateProduct
 	}
 	stock, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
-	if err != nil || stock <= 0 {
+	if err != nil || stock < 0 {
 		fmt.Println("Ошибка в вводе!")
 		return Product{}, ErrCreateProduct
 	}
@@ -82,7 +83,7 @@ func (w *Warehouse) DeleteProduct(id int) error {
 			return nil
 		}
 	}
-	return ErrDelete
+	return ErrIdNotFound
 }
 
 func (w *Warehouse) SellProduct(id int, amount int) error {
@@ -97,7 +98,7 @@ func (w *Warehouse) SellProduct(id int, amount int) error {
 		}
 	}
 
-	return ErrEditStock
+	return ErrIdNotFound
 }
 
 func (w *Warehouse) EditProductPrice(id int, amount int) error {
@@ -110,5 +111,5 @@ func (w *Warehouse) EditProductPrice(id int, amount int) error {
 			return nil
 		}
 	}
-	return ErrEditPrice
+	return ErrIdNotFound
 }

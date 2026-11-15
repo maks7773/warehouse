@@ -17,7 +17,7 @@ func main() {
 		Price: 1012,
 		Stock: 10,
 	})
-	fmt.Println(store)
+
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 

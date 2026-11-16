@@ -11,12 +11,17 @@ import (
 
 func main() {
 	store := warehouse.NewWarehouse()
-	store.AddProduct(warehouse.Product{
 
-		Name:  "krem",
-		Price: 1012,
-		Stock: 10,
-	})
+	err := store.LoadFromFile("products.json")
+	if err != nil {
+		if os.IsNotExist(err) {
+
+		} else {
+			fmt.Println(err)
+			return
+
+		}
+	}
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
@@ -60,6 +65,11 @@ func main() {
 				Price: newP.Price,
 				Stock: newP.Stock,
 			})
+			errs := store.SaveToFile("products.json")
+			if errs != nil {
+				fmt.Println(errs)
+				continue
+			}
 			fmt.Println("Товар добавлен успешно")
 		case 3:
 			fmt.Print("Введите айди товара для удаления \n>> ")
@@ -74,6 +84,11 @@ func main() {
 			err = store.DeleteProduct(id)
 			if err != nil {
 				fmt.Println(err)
+				continue
+			}
+			errs := store.SaveToFile("products.json")
+			if errs != nil {
+				fmt.Println(errs)
 				continue
 			}
 			fmt.Println("Товар удален успешно")
@@ -102,6 +117,11 @@ func main() {
 				fmt.Println(err)
 				continue
 			}
+			errs := store.SaveToFile("products.json")
+			if errs != nil {
+				fmt.Println(errs)
+				continue
+			}
 			fmt.Println("Товар продан успешно")
 		case 5:
 			fmt.Print("Введите айди у которого хотите поменять цену \n>> ")
@@ -125,6 +145,11 @@ func main() {
 			err = store.EditProductPrice(id, amount)
 			if err != nil {
 				fmt.Println(err)
+				continue
+			}
+			errs := store.SaveToFile("products.json")
+			if errs != nil {
+				fmt.Println(errs)
 				continue
 			}
 			fmt.Println("Цена изменена успешно!")

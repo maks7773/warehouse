@@ -2,8 +2,10 @@ package warehouse
 
 import (
 	"bufio"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -13,6 +15,7 @@ var ErrCreateProduct = errors.New("Не удалось создать товар
 var ErrDelete = errors.New("Не удалось удалить товар")
 var ErrEditStock = errors.New("Не удалось продать товар")
 var ErrEditPrice = errors.New("Не удалось поменять цену у товара")
+var ErrSaveToFile = errors.New("Невалидное название файла")
 
 type Product struct {
 	ID    int
@@ -112,4 +115,36 @@ func (w *Warehouse) EditProductPrice(id int, amount int) error {
 		}
 	}
 	return ErrIdNotFound
+}
+
+func (w *Warehouse) SaveToFile(filename string) error {
+	if filename == "" {
+		return ErrSaveToFile
+	}
+	data, err := json.MarshalIndent(w.products, "", " ")
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(filename, data, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (w *Warehouse) LoadFromFile(filename string) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(data, &w.products)
+	if err != nil {
+		return err
+	}
+	for _, pr := range w.products {
+		if pr.ID >= w.nextId {
+			w.nextId = pr.ID + 1
+		}
+	}
+	return nil
 }

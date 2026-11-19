@@ -43,8 +43,9 @@ func (w *Warehouse) AddProduct(pr Product) {
 }
 
 func (w *Warehouse) ListProducts() []Product {
-
-	return w.products
+	dst := make([]Product, len(w.products))
+	copy(dst, w.products)
+	return dst
 }
 
 func CreateProduct(scanner *bufio.Scanner) (Product, error) {

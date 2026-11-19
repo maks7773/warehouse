@@ -4,5 +4,11 @@
   "Name": "qwe",
   "Price": 123,
   "Stock": 12
+ },
+ {
+  "ID": 2,
+  "Name": "qwe",
+  "Price": 123,
+  "Stock": 2
  }
 ]

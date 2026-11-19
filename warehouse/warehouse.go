@@ -1,13 +1,10 @@
 package warehouse
 
 import (
-	"bufio"
 	"encoding/json"
 	"errors"
-	"fmt"
+
 	"os"
-	"strconv"
-	"strings"
 )
 
 var ErrIdNotFound = errors.New("Товара с таким id нет")
@@ -46,38 +43,6 @@ func (w *Warehouse) ListProducts() []Product {
 	dst := make([]Product, len(w.products))
 	copy(dst, w.products)
 	return dst
-}
-
-func CreateProduct(scanner *bufio.Scanner) (Product, error) {
-
-	fmt.Print("ВВедите название: \n>> ")
-	if !scanner.Scan() {
-		return Product{}, ErrCreateProduct
-	}
-	name := strings.TrimSpace(scanner.Text())
-	if len(name) == 0 {
-		return Product{}, ErrCreateProduct
-	}
-	fmt.Print("ВВедите цену: \n>> ")
-	if !scanner.Scan() {
-		return Product{}, ErrCreateProduct
-	}
-	price, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
-	if err != nil || price <= 0 {
-		fmt.Println("Ошибка в вводе!")
-		return Product{}, ErrCreateProduct
-	}
-
-	fmt.Print("ВВедите количество: \n>> ")
-	if !scanner.Scan() {
-		return Product{}, ErrCreateProduct
-	}
-	stock, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
-	if err != nil || stock < 0 {
-		fmt.Println("Ошибка в вводе!")
-		return Product{}, ErrCreateProduct
-	}
-	return Product{Name: name, Price: price, Stock: stock}, nil
 }
 
 func (w *Warehouse) DeleteProduct(id int) error {

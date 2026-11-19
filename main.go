@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -9,12 +10,44 @@ import (
 	"warehouse/warehouse"
 )
 
+func CreateProduct(scanner *bufio.Scanner) (warehouse.Product, error) {
+
+	fmt.Print("ВВедите название: \n>> ")
+	if !scanner.Scan() {
+		return warehouse.Product{}, warehouse.ErrCreateProduct
+	}
+	name := strings.TrimSpace(scanner.Text())
+	if len(name) == 0 {
+		return warehouse.Product{}, warehouse.ErrCreateProduct
+	}
+	fmt.Print("ВВедите цену: \n>> ")
+	if !scanner.Scan() {
+		return warehouse.Product{}, warehouse.ErrCreateProduct
+	}
+	price, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
+	if err != nil || price <= 0 {
+		fmt.Println("Ошибка в вводе!")
+		return warehouse.Product{}, warehouse.ErrCreateProduct
+	}
+
+	fmt.Print("ВВедите количество: \n>> ")
+	if !scanner.Scan() {
+		return warehouse.Product{}, warehouse.ErrCreateProduct
+	}
+	stock, err := strconv.Atoi(strings.TrimSpace(scanner.Text()))
+	if err != nil || stock < 0 {
+		fmt.Println("Ошибка в вводе!")
+		return warehouse.Product{}, warehouse.ErrCreateProduct
+	}
+	return warehouse.Product{Name: name, Price: price, Stock: stock}, nil
+}
+
 func main() {
 	store := warehouse.NewWarehouse()
 
 	err := store.LoadFromFile("products.json")
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 
 		} else {
 			fmt.Println(err)
@@ -55,7 +88,7 @@ func main() {
 			}
 		case 2:
 
-			newP, err := warehouse.CreateProduct(scanner)
+			newP, err := CreateProduct(scanner)
 			if err != nil {
 				fmt.Println(err)
 				continue
